@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Dtos;
 
@@ -17,13 +19,23 @@ public static class ReservationsExtensions
             .WithOpenApi()
             .WithName("GetAllValidReservations");
         app.MapPost("api/reservation",
-                async (IReservationService service, [FromBody] ReservationDto dto) => await service.AddReservation(dto))
-            .WithOpenApi()
+                async (IReservationService service, IValidator<ReservationDto> validator, [FromBody] ReservationDto dto) =>
+                {
+                    var validationResult = await validator.ValidateAsync(dto);
+                    if (!validationResult.IsValid)
+                    {
+                        return Results.ValidationProblem(validationResult.ToDictionary());
+                    }
+                    var result = await service.AddReservation(dto);
+                    return result ? Results.Ok(result) : Results.BadRequest("Room already reserved");
+                    
+                })
+                .WithOpenApi()
             .WithName("CreateReservation");
-        app.MapPatch("api/reservation", async (IReservationService service, [FromBody] ReservationDto dto) =>
+        app.MapPatch("api/reservation", async (IReservationService service, IValidator<ReservationDto> validator, [FromBody] ReservationDto dto) =>
             {
                 var result = await service.UpdateReservation(dto);
-                return result == null ? Results.NotFound("Not found") : Results.Ok(result);
+                return result ? Results.Ok(result) : Results.NotFound();
             })
             .WithOpenApi()
             .WithName("EditReservation");

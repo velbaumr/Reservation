@@ -30,7 +30,7 @@ public class ReservationContext : DbContext
             .IsRequired();
         
         modelBuilder.Entity<User>()
-            .HasIndex(u => new {u.Email, u.IdCode})
+            .HasIndex(u => u.Email)
             .IsUnique();
             
     }

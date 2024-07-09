@@ -9,7 +9,7 @@ public interface IReservationService
 
     Task CancelReservation(int reservationId, int userId);
 
-    Task<ReservationViewDto?> AddReservation(ReservationDto reservation);
+    Task<bool> AddReservation(ReservationDto reservation);
 
-    Task<ReservationViewDto?> UpdateReservation(ReservationDto reservation);
+    Task<bool> UpdateReservation(ReservationDto reservation);
 }

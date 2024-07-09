@@ -1,8 +1,11 @@
 using DataAccess;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Services;
+using Services.Dtos;
 using WebApi.Endpoints;
 using WebApi.Filters;
+using WebApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -16,6 +19,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddDbContext<ReservationContext>(options =>
     options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IValidator<ReservationDto>, ReservationValidator>();
+builder.Services.AddScoped<IValidator<UserDto>, UserValidator>();
 builder.Services.AddExceptionHandler<ApiExceptionFilter>();
 builder.Services.AddProblemDetails();
 var app = builder.Build();
@@ -23,7 +28,6 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-
     SeedData.Initialize(services);
 }
 

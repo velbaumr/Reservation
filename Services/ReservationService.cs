@@ -6,15 +6,13 @@ using Services.Dtos;
 namespace Services;
 
 public class ReservationService(
-    ReservationContext context, IUserService service) : IReservationService
+    ReservationContext context, IUserService userService, IRoomService roomService) : IReservationService
 {
     public async Task<IEnumerable<ReservationViewDto?>> GetValidReservations()
     {
-        var start = DateTime.Today;
-
         var reservations = await context.Reservations.Include(x => x.Room)
             .Where(x =>
-                x.Start >= start &&
+                x.Start.Date >= DateTime.Today &&
                 !x.Cancelled)
             .ToListAsync();
 
@@ -33,7 +31,7 @@ public class ReservationService(
 
     public async Task CancelReservation(int reservationId, int userId)
     {
-        var user = await service.GetUser(userId);
+        var user = await userService.GetUser(userId);
         if (user == null) throw new ArgumentException("wrong user id");
         
         var reservation = await context.Reservations.FindAsync(reservationId);
@@ -52,21 +50,20 @@ public class ReservationService(
     }
 
 
-    public async Task<ReservationViewDto?> UpdateReservation(ReservationDto reservation)
+    public async Task<bool> UpdateReservation(ReservationDto reservation)
     {
         var toUpdate = await context.Reservations.FindAsync(reservation.Id);
 
         if (toUpdate == null)
-            return null;
+            return false;
         toUpdate.Start = reservation.From;
         toUpdate.End = reservation.To;
 
         await context.SaveChangesAsync();
-
-        return Map(toUpdate);
+        return true;
     }
 
-    public async Task<ReservationViewDto?> AddReservation(ReservationDto reservation)
+    public async Task<bool> AddReservation(ReservationDto reservation)
     {
         var toAdd = new Reservation
         {
@@ -76,10 +73,15 @@ public class ReservationService(
             UserId = reservation.UserId
         };
 
+        var available = await roomService.GetFreeRoomsForPeriod(reservation.From, reservation.To);
+        if (!available.Select(x => x.Id).Contains(reservation.RoomId))
+        {
+            return false;
+        }
+
         await context.AddAsync(toAdd);
         await context.SaveChangesAsync();
-
-        return Map(toAdd);
+        return true;
     }
 
     private static ReservationViewDto Map(Reservation reservation)

@@ -15,11 +15,11 @@ public class Reservation : Entity
 
     public bool Cancelled { get; set; }
 
-    [NotMapped] public bool InUse => Start <= Today && End >= Today;
+    [NotMapped] public bool InUse => Start.Date <= Today && End.Date >= Today;
 
     [NotMapped] public DateTime Today { get; set; } = DateTime.Today;
 
-    [NotMapped] public bool Ended => End <= Today;
+    [NotMapped] public bool Ended => End.Date <= Today;
 
     [NotMapped] public bool CancellableByUser => Start.Subtract(Today).Days >= 3;
 }

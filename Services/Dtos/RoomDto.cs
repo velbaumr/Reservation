@@ -6,9 +6,9 @@ public class RoomDto
 {
     public int? Id { get; set; }
 
-    [Required] public string? RoomNo { get; set; }
+    public string? RoomNo { get; set; }
 
-    [Required] public int Beds { get; set; }
+    public int Beds { get; set; }
 
-    [Required] public decimal Price { get; set; }
+    public decimal Price { get; set; }
 }

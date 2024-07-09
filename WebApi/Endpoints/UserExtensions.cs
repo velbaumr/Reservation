@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Dtos;
 
@@ -8,8 +9,13 @@ public static class UserExtensions
 {
     public static void MapUsers(this WebApplication app)
     {
-        app.MapPost("api/users", async (IUserService service, [FromBody] UserDto dto) =>
+        app.MapPost("api/users", async (IUserService service, IValidator<UserDto> validator, [FromBody] UserDto dto) =>
             {
+                var validationResult = await validator.ValidateAsync(dto);
+                if (!validationResult.IsValid)
+                {
+                    return Results.ValidationProblem(validationResult.ToDictionary());
+                }
                 await service.AddUser(dto);
                 return Results.Ok();
             })
@@ -23,5 +29,12 @@ public static class UserExtensions
             })
             .WithOpenApi()
             .WithName("GetUser");
+        app.MapGet("api/users/email/{email}", async (IUserService service, string email) =>
+            {
+                var result = await service.GetByEmail(email);
+                return result == null ? Results.NotFound("Not found") : Results.Ok(result);
+            })
+            .WithOpenApi()
+            .WithName("GetUserByEmail");
     }
 }

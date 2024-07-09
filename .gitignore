@@ -3,7 +3,9 @@
 *.log
 *.sql
 *.sqlite
-*.db*
+*.db
+*.db-shm
+*.db-wal
 # Common IntelliJ Platform excludes
 
 

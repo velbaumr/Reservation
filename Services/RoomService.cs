@@ -5,13 +5,18 @@ using Services.Dtos;
 
 namespace Services;
 
-public class RoomService(IReservationService service, ReservationContext context) : IRoomService
+public class RoomService(ReservationContext context) : IRoomService
 {
     public async Task<IEnumerable<RoomDto>> GetFreeRoomsForPeriod(DateTime start, DateTime end)
     {
-        var reserved = await service.GetValidReservations();
-        var reservedForPeriod = reserved.Where(x => x!.From < end && x.To > start)
-            .Select(x => x!.Id);
+        var reserved =  await context.Reservations.Include(x => x.Room)
+            .Where(x =>
+                x.Start.Date >= DateTime.Today &&
+                !x.Cancelled)
+            .ToListAsync();
+        
+        var reservedForPeriod = reserved.Where(x => x!.Start.Date < end && x.End.Date > start)
+            .Select(x => x.Room!.Id);
         
         var all = await context.Rooms.ToListAsync();
         
