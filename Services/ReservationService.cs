@@ -5,7 +5,8 @@ using Services.Dtos;
 
 namespace Services;
 
-public class ReservationService(ReservationContext context) : IReservationService
+public class ReservationService(
+    ReservationContext context, IUserService service) : IReservationService
 {
     public async Task<IEnumerable<ReservationViewDto?>> GetValidReservations()
     {
@@ -14,7 +15,8 @@ public class ReservationService(ReservationContext context) : IReservationServic
         var reservations = await context.Reservations.Include(x => x.Room)
             .Where(x =>
                 x.Start >= start &&
-                !x.Cancelled).ToListAsync();
+                !x.Cancelled)
+            .ToListAsync();
 
         return reservations.Select(Map);
     }
@@ -22,16 +24,30 @@ public class ReservationService(ReservationContext context) : IReservationServic
     public async Task<IEnumerable<ReservationViewDto?>> GetReservationsForUser(int userId)
     {
         var reservations = await context.Reservations.Include(x => x.Room)
-            .Where(x => x.UserId == userId && !x.Cancelled).ToListAsync();
+            .Where(x => x.UserId == userId && !x.Cancelled)
+            .ToListAsync();
 
         var filtered = reservations.Where(x => x.CancellableByUser);
         return filtered.Select(Map);
     }
 
-    public async Task CancelReservation(int reservationId)
+    public async Task CancelReservation(int reservationId, int userId)
     {
+        var user = await service.GetUser(userId);
+        if (user == null) throw new ArgumentException("wrong user id");
+        
         var reservation = await context.Reservations.FindAsync(reservationId);
-        if (reservation != null) reservation.Cancelled = true;
+        if (reservation == null) throw new ArgumentException("wrong reservation id");
+        
+        if (user.IsAdmin && !reservation.Ended)
+        {
+            reservation.Cancelled = true;
+        }
+        else
+        {
+            reservation.Cancelled = reservation.CancellableByUser;
+        }
+
         await context.SaveChangesAsync();
     }
 
@@ -40,7 +56,8 @@ public class ReservationService(ReservationContext context) : IReservationServic
     {
         var toUpdate = await context.Reservations.FindAsync(reservation.Id);
 
-        if (toUpdate == null) return null;
+        if (toUpdate == null)
+            return null;
         toUpdate.Start = reservation.From;
         toUpdate.End = reservation.To;
 

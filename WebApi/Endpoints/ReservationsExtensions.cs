@@ -27,10 +27,10 @@ public static class ReservationsExtensions
             })
             .WithOpenApi()
             .WithName("EditReservation");
-        app.MapPatch("api/reservation/cancel/{reservationId:int}",
-                async (IReservationService service, int reservationId) =>
+        app.MapPatch("api/reservation/cancel/user/{userId:int}/reservation/{reservationId:int}",
+                async (IReservationService service, int reservationId, int userId) =>
                 {
-                    await service.CancelReservation(reservationId);
+                    await service.CancelReservation(reservationId, userId);
                     return Results.Ok();
                 })
             .WithOpenApi()

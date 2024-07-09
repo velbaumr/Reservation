@@ -10,14 +10,14 @@ var configuration = builder.Configuration;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddExceptionHandler<ApiExceptionFilter>();
 
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IRoomService, RoomService>();
 builder.Services.AddDbContext<ReservationContext>(options =>
     options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
-
+builder.Services.AddExceptionHandler<ApiExceptionFilter>();
+builder.Services.AddProblemDetails();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -37,7 +37,6 @@ if (app.Environment.IsDevelopment())
 app.MapReservations();
 app.MapRooms();
 app.MapUsers();
-
+app.UseExceptionHandler();
 app.UseHttpsRedirection();
-
 app.Run();

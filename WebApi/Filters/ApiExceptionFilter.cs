@@ -10,7 +10,7 @@ public class ApiExceptionFilter : IExceptionHandler
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
 
         await httpContext.Response
-            .WriteAsJsonAsync(new { Errors = new { Detail = "Server error" } }, cancellationToken);
+            .WriteAsJsonAsync(new { Errors = new { Detail = exception.Message } }, cancellationToken);
 
         return true;
     }

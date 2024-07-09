@@ -1,14 +1,33 @@
 ﻿using DataAccess;
 using Domain;
+using Microsoft.EntityFrameworkCore;
+using Services.Dtos;
 
 namespace Services;
 
-public class RoomService(ReservationContext context) : IRoomService
+public class RoomService(IReservationService service, ReservationContext context) : IRoomService
 {
-    public IEnumerable<Room> GetFreeRoomsForPeriod(DateTime start, DateTime end)
+    public async Task<IEnumerable<RoomDto>> GetFreeRoomsForPeriod(DateTime start, DateTime end)
     {
-        var rooms = context.Rooms;
+        var reserved = await service.GetValidReservations();
+        var reservedForPeriod = reserved.Where(x => x!.From < end && x.To > start)
+            .Select(x => x!.Id);
+        
+        var all = await context.Rooms.ToListAsync();
+        
+        var notReserved = all.Where(x => !reservedForPeriod.Contains(x.Id)).ToList();
+ 
+        return notReserved.Select(Map);
+    }
 
-        return new List<Room>();
+    private static RoomDto Map(Room room)
+    {
+        return new RoomDto
+        {
+            Id = room.Id,
+            Beds = room.Beds,
+            Price = room.Price,
+            RoomNo = room.RoomNo
+        };
     }
 }

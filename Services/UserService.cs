@@ -1,20 +1,20 @@
 ﻿using DataAccess;
 using Domain;
+using Microsoft.EntityFrameworkCore;
 using Services.Dtos;
 
 namespace Services;
 
 public class UserService(ReservationContext context) : IUserService
 {
-    public async Task AddUser(UserDto dto)
+    public async Task AddUser(UserDto user)
     {
         var toAdd = new User
         {
-            FirstName = dto.FirstName,
-            LastName = dto.LastName,
-            UserName = dto.UserName,
-            Email = dto.Email,
-            IdCode = dto.IdCode
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            IdCode = user.IdCode
         };
 
         await context.AddAsync(toAdd);
@@ -28,8 +28,22 @@ public class UserService(ReservationContext context) : IUserService
         return result == null ? null : Map(result);
     }
 
-    private UserDto Map(User result)
+    public async Task<UserDto?> GetByEmail(string email)
     {
-        throw new NotImplementedException();
+        var result = await context.Users.SingleOrDefaultAsync(x => x.Email == email);
+        return result == null ? null : Map(result);
+    }
+
+    private static UserDto Map(User user)
+    {
+        return new UserDto
+        {
+            Id = user.Id,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            IdCode = user.IdCode,
+            IsAdmin = user.IsAdmin
+        };
     }
 }

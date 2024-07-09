@@ -59,7 +59,6 @@ public static class SeedData
                 FirstName = "test",
                 LastName = "test",
                 Email = "raul@kalamaja.com",
-                UserName = "admin",
                 IsAdmin = true
             });
         context.SaveChanges();

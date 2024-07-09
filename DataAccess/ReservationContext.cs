@@ -21,10 +21,17 @@ public class ReservationContext : DbContext
     {
         modelBuilder.Entity<Room>()
             .HasMany(c => c.Reservations)
-            .WithOne(e => e.Room);
+            .WithOne(e => e.Room)
+            .IsRequired();
 
         modelBuilder.Entity<User>()
             .HasMany(c => c.Reservations)
-            .WithOne(e => e.User);
+            .WithOne(e => e.User)
+            .IsRequired();
+        
+        modelBuilder.Entity<User>()
+            .HasIndex(u => new {u.Email, u.IdCode})
+            .IsUnique();
+            
     }
 }

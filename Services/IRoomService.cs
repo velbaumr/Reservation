@@ -1,8 +1,8 @@
-﻿using Domain;
+﻿using Services.Dtos;
 
 namespace Services;
 
 public interface IRoomService
 {
-    IEnumerable<Room> GetFreeRoomsForPeriod(DateTime start, DateTime end);
+    Task<IEnumerable<RoomDto>> GetFreeRoomsForPeriod(DateTime start, DateTime end);
 }

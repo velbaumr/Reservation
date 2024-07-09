@@ -3,6 +3,7 @@
 *.log
 *.sql
 *.sqlite
+*.db*
 # Common IntelliJ Platform excludes
 
 
