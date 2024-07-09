@@ -19,19 +19,10 @@ public class ReservationContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Room>()
-            .HasMany(c => c.Reservations)
-            .WithOne(e => e.Room)
-            .IsRequired();
+        modelBuilder.Entity<Room>().HasMany(c => c.Reservations).WithOne(e => e.Room).IsRequired();
 
-        modelBuilder.Entity<User>()
-            .HasMany(c => c.Reservations)
-            .WithOne(e => e.User)
-            .IsRequired();
-        
-        modelBuilder.Entity<User>()
-            .HasIndex(u => u.Email)
-            .IsUnique();
-            
+        modelBuilder.Entity<User>().HasMany(c => c.Reservations).WithOne(e => e.User).IsRequired();
+
+        modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
     }
 }

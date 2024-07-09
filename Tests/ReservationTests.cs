@@ -81,4 +81,28 @@ public class ReservationTests
 
         Assert.True(!reservation.InUse);
     }
+
+    [Fact]
+    public void IsCancellableByUser()
+    {
+        var reservation = new Reservation
+        {
+            Start = new DateTime(2024, 7, 17),
+            Today = new DateTime(2024, 7, 14)
+        };
+        
+        Assert.True(reservation.CancellableByUser);
+    }
+
+    [Fact]
+    public void IsNotCancellableByUser()
+    {
+        var reservation = new Reservation
+        {
+            Start = new DateTime(2024, 7, 16),
+            Today = new DateTime(2024, 7, 14)
+        };
+        
+        Assert.True(!reservation.CancellableByUser);
+    }
 }

@@ -27,15 +27,20 @@ public static class ReservationsExtensions
                         return Results.ValidationProblem(validationResult.ToDictionary());
                     }
                     var result = await service.AddReservation(dto);
-                    return result ? Results.Ok(result) : Results.BadRequest("Room already reserved");
+                    return result ? Results.Ok() : Results.BadRequest("Room already reserved");
                     
                 })
                 .WithOpenApi()
             .WithName("CreateReservation");
         app.MapPatch("api/reservation", async (IReservationService service, IValidator<ReservationDto> validator, [FromBody] ReservationDto dto) =>
             {
+                var validationResult = await validator.ValidateAsync(dto);
+                if (!validationResult.IsValid)
+                {
+                    return Results.ValidationProblem(validationResult.ToDictionary());
+                }
                 var result = await service.UpdateReservation(dto);
-                return result ? Results.Ok(result) : Results.NotFound();
+                return result ? Results.Ok() : Results.NotFound("Not Found");
             })
             .WithOpenApi()
             .WithName("EditReservation");

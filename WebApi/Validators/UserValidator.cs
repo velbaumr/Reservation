@@ -17,7 +17,7 @@ public class UserValidator : AbstractValidator<UserDto>
 
         RuleFor(x => x.Email)
             .NotNull()
-            .EmailAddress();
+            .Matches(@"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$");
 
         RuleFor(x => x.IdCode)
             .NotNull()

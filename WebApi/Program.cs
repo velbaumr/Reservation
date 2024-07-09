@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Services;
 using Services.Dtos;
 using WebApi.Endpoints;
-using WebApi.Filters;
+using WebApi.Handlers;
 using WebApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +21,7 @@ builder.Services.AddDbContext<ReservationContext>(options =>
     options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IValidator<ReservationDto>, ReservationValidator>();
 builder.Services.AddScoped<IValidator<UserDto>, UserValidator>();
-builder.Services.AddExceptionHandler<ApiExceptionFilter>();
+builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 builder.Services.AddProblemDetails();
 var app = builder.Build();
 

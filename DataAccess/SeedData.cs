@@ -9,8 +9,7 @@ public static class SeedData
     public static void Initialize(IServiceProvider serviceProvider)
     {
         using var context = new ReservationContext(
-            serviceProvider.GetRequiredService<
-                DbContextOptions<ReservationContext>>());
+            serviceProvider.GetRequiredService<DbContextOptions<ReservationContext>>());
 
         context.Database.EnsureCreated();
 
@@ -58,9 +57,10 @@ public static class SeedData
             {
                 FirstName = "test",
                 LastName = "test",
-                Email = "raul@kalamaja.com",
+                Email = "test@hotel.com",
                 IsAdmin = true
             });
+        
         context.SaveChanges();
     }
 }

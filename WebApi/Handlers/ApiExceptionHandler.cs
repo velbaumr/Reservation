@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 
-namespace WebApi.Filters;
+namespace WebApi.Handlers;
 
-public class ApiExceptionFilter : IExceptionHandler
+public class ApiExceptionHandler : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception,
         CancellationToken cancellationToken)
