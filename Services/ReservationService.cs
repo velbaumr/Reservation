@@ -9,12 +9,12 @@ public class ReservationService(ReservationContext context) : IReservationServic
 {
     public async Task<IEnumerable<ReservationViewDto?>> GetValidReservations()
     {
-        var start =DateTime.Today;
-        
+        var start = DateTime.Today;
+
         var reservations = await context.Reservations.Include(x => x.Room)
             .Where(x =>
-            x.Start >= start &&
-            !x.Cancelled).ToListAsync();
+                x.Start >= start &&
+                !x.Cancelled).ToListAsync();
 
         return reservations.Select(Map);
     }
@@ -28,24 +28,6 @@ public class ReservationService(ReservationContext context) : IReservationServic
         return filtered.Select(Map);
     }
 
-    private static ReservationViewDto? Map(Reservation reservation)
-    {
-        return new ReservationViewDto
-        {
-            Id = reservation.Id,
-            From = reservation.Start,
-            To = reservation.End,
-            UserId = reservation.UserId,
-            RoomData = new RoomDto
-            {
-                Id = reservation.RoomId,
-                Beds = reservation.Room!.Beds,
-                Price = reservation.Room.Price,
-                RoomNo = reservation.Room.RoomNo
-            }
-        };
-    }
-
     public async Task CancelReservation(int reservationId)
     {
         var reservation = await context.Reservations.FindAsync(reservationId);
@@ -53,7 +35,7 @@ public class ReservationService(ReservationContext context) : IReservationServic
         await context.SaveChangesAsync();
     }
 
-    
+
     public async Task<ReservationViewDto?> UpdateReservation(ReservationDto reservation)
     {
         var toUpdate = await context.Reservations.FindAsync(reservation.Id);
@@ -65,7 +47,6 @@ public class ReservationService(ReservationContext context) : IReservationServic
         await context.SaveChangesAsync();
 
         return Map(toUpdate);
-
     }
 
     public async Task<ReservationViewDto?> AddReservation(ReservationDto reservation)
@@ -82,5 +63,23 @@ public class ReservationService(ReservationContext context) : IReservationServic
         await context.SaveChangesAsync();
 
         return Map(toAdd);
+    }
+
+    private static ReservationViewDto Map(Reservation reservation)
+    {
+        return new ReservationViewDto
+        {
+            Id = reservation.Id,
+            From = reservation.Start,
+            To = reservation.End,
+            UserId = reservation.UserId,
+            RoomData = new RoomDto
+            {
+                Id = reservation.RoomId,
+                Beds = reservation.Room!.Beds,
+                Price = reservation.Room.Price,
+                RoomNo = reservation.Room.RoomNo
+            }
+        };
     }
 }

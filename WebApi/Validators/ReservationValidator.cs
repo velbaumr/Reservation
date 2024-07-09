@@ -1,6 +1,9 @@
-﻿namespace WebApi.Validators;
+﻿using Domain;
+using FluentValidation;
 
-public class ReservationValidator
+namespace WebApi.Validators;
+public class ReservationValidator : AbstractValidator<Reservation>
 {
-    
+
+
 }

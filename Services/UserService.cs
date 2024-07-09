@@ -1,21 +1,34 @@
 ﻿using DataAccess;
 using Domain;
+using Services.Dtos;
 
 namespace Services;
 
 public class UserService(ReservationContext context) : IUserService
 {
-    public Task AddUser(User user)
+    public async Task AddUser(UserDto dto)
     {
-        throw new NotImplementedException();
+        var toAdd = new User
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            UserName = dto.UserName,
+            Email = dto.Email,
+            IdCode = dto.IdCode
+        };
+
+        await context.AddAsync(toAdd);
+        await context.SaveChangesAsync();
     }
 
-    public Task<IEnumerable<User>> GetUsers()
+
+    public async Task<UserDto?> GetUser(int id)
     {
-        throw new NotImplementedException();
+        var result = await context.Users.FindAsync(id);
+        return result == null ? null : Map(result);
     }
 
-    public Task<User> GetUser(int id)
+    private UserDto Map(User result)
     {
         throw new NotImplementedException();
     }

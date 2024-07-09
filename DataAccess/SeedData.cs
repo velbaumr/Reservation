@@ -13,11 +13,8 @@ public static class SeedData
                 DbContextOptions<ReservationContext>>());
 
         context.Database.EnsureCreated();
-        
-        if (context.Rooms.Any())
-        {
-            return;
-        }
+
+        if (context.Rooms.Any()) return;
         context.Rooms.AddRange(
             new Room
             {
@@ -68,4 +65,3 @@ public static class SeedData
         context.SaveChanges();
     }
 }
-    

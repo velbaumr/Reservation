@@ -1,12 +1,9 @@
-﻿using Domain;
+﻿using Services.Dtos;
 
 namespace Services;
 
 public interface IUserService
 {
-    Task AddUser(User user);
-
-    Task<IEnumerable<User>> GetUsers();
-
-    Task<User> GetUser(int id);
+    Task AddUser(UserDto user);
+    Task<UserDto?> GetUser(int id);
 }

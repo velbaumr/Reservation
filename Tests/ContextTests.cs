@@ -6,9 +6,10 @@ namespace Tests;
 
 public class ContextTests
 {
-    private readonly DbContextOptions<ReservationContext> _dbContextOptions = new DbContextOptionsBuilder<ReservationContext>()
-        .UseInMemoryDatabase(databaseName: "TestDb1")
-        .Options;
+    private readonly DbContextOptions<ReservationContext> _dbContextOptions =
+        new DbContextOptionsBuilder<ReservationContext>()
+            .UseInMemoryDatabase("TestDb1")
+            .Options;
 
     public ContextTests()
     {
@@ -28,7 +29,7 @@ public class ContextTests
     {
         await using var context = new ReservationContext(_dbContextOptions);
         var result = await context.Rooms.ToListAsync();
-        
+
         Assert.Equal(3, result.Count);
     }
 
@@ -36,15 +37,15 @@ public class ContextTests
     public async Task AddsReservation()
     {
         await using var context = new ReservationContext(_dbContextOptions);
-        
+
         await context.Reservations.AddAsync(
-                           new Reservation
-                           {
-                               User = await context.Users.FindAsync(1),
-                               Room = await context.Rooms.FindAsync(2),
-                               Start = DateTime.Now + TimeSpan.FromDays(0),
-                               End = DateTime.Now + TimeSpan.FromDays(6)
-                           });
+            new Reservation
+            {
+                User = await context.Users.FindAsync(1),
+                Room = await context.Rooms.FindAsync(2),
+                Start = DateTime.Now + TimeSpan.FromDays(0),
+                End = DateTime.Now + TimeSpan.FromDays(6)
+            });
         await context.SaveChangesAsync();
         Assert.Single(context.Reservations);
     }
@@ -70,7 +71,7 @@ public class ContextTests
                 Beds = 3,
                 Price = 7.99M
             }
-            );
+        );
         context.Users.AddRange(
             new User
             {
